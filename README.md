@@ -1,9 +1,12 @@
-# DSA 3050A — Business Intelligence & Data Visualization
+# DSA 3050A - Business Intelligence & Data Visualization
 ## End Semester Practical Examination
 
 **Student Name:** Betelhem Getachew Kebede
+
 **Student ID:** 670549
+
 **Repository:** DSA3050-PowerBI-Betelhem_Kebede-670549
+
 **Software:** Microsoft Power BI Desktop
 
 ---
@@ -18,7 +21,7 @@ This project develops a complete Business Intelligence solution analyzing **US D
 
 ### 1. Source of the Dataset
 
-The dataset was obtained from the **United States Bureau of Transportation Statistics (BTS)** — Airline On-Time Performance Data, available at [www.transtats.bts.gov](https://www.transtats.bts.gov). This is a U.S. federal government open-data portal that publishes comprehensive domestic flight operations records under federal reporting requirements — verifiable and authoritative.
+The dataset was obtained from the **United States Bureau of Transportation Statistics (BTS)** - Airline On-Time Performance Data, available at [www.transtats.bts.gov](https://www.transtats.bts.gov). This is a U.S. federal government open-data portal that publishes comprehensive domestic flight operations records under federal reporting requirements — verifiable and authoritative.
 
 The working dataset (`flight_data_2024.csv`) is a stratified random sample of **30,000 records** drawn proportionally across months:
 
@@ -46,9 +49,9 @@ Each row represents one US domestic flight operation from January 1 to March 25,
 
 ### 3. Why This Dataset Was Selected
 
-**Genuine messiness:** Time columns stored as HHMM integers, dates as strings, nulls from cancellations, categorical fields needing standardization — real, not engineered problems.
+**Genuine messiness:** Time columns stored as HHMM integers, dates as strings, nulls from cancellations, categorical fields needing standardization - real, not engineered problems.
 
-**Rich analytical potential:** Carrier performance, route analysis, delay cause attribution, temporal trends, and geographic analysis — all examination dimensions simultaneously.
+**Rich analytical potential:** Carrier performance, route analysis, delay cause attribution, temporal trends, and geographic analysis - all examination dimensions simultaneously.
 
 **Real business relevance:** Airline operations analytics is a high-stakes BI domain used by carriers, airports, and regulators for operational and financial decisions.
 
@@ -86,17 +89,17 @@ Airlines need this continuously because delays and cancellations have direct fin
 
 **Q1:** Which airline carriers have the highest on-time performance rates and worst delay rates in Q1 2024?
 
-**Q2:** What are the root causes of flight delays, and which cause — carrier, weather, NAS, security, or late aircraft — is responsible for the most delay minutes?
+**Q2:** What are the root causes of flight delays, and which cause - carrier, weather, NAS, security, or late aircraft - is responsible for the most delay minutes?
 
 **Q3:** How do cancellation rates vary by carrier and by cancellation reason (Carrier, Weather, NAS)?
 
 **Q4:** Which routes experience the highest average delays and what is the typical distance profile of delayed flights?
 
-**Q5:** How do delay rates trend across the three months of Q1 2024 — is there a seasonal pattern or a month showing unusual deterioration?
+**Q5:** How do delay rates trend across the three months of Q1 2024 - is there a seasonal pattern or a month showing unusual deterioration?
 
 ---
 
-## Section B: Power Query — Data Cleaning & Transformation
+## Section B: Power Query - Data Cleaning & Transformation
 
 Nine transformations were performed. All steps are visible in the Applied Steps panel of the `flight_data_2024` query.
 
@@ -109,7 +112,7 @@ Nine transformations were performed. All steps are visible in the Applied Steps 
 ![Data Types](Screenshots/02_fixed_datatypes..png)
 
 ### Transformation 2: Parse Time Columns from HHMM Integer Format
-**Problem:** Departure/arrival times stored as HHMM integers (1640 = 16:40). Not usable for time arithmetic — 1710 - 1640 = 70, not 30 minutes.
+**Problem:** Departure/arrival times stored as HHMM integers (1640 = 16:40). Not usable for time arithmetic, 1710 - 1640 = 70, not 30 minutes.
 **Transformation:** Custom columns: `Number.IntegerDivide([crs_dep_time], 100)` for hour, `Number.Mod([crs_dep_time], 100)` for minute.
 **Reason:** Proper components enable departure-hour delay analysis and accurate elapsed time calculations.
 **Result:** Sched_Dep_Hour column (0–23) available for time-of-day delay analysis.
@@ -117,7 +120,7 @@ Nine transformations were performed. All steps are visible in the Applied Steps 
 ![Time Parsing](Screenshots/03_parsed_time_columns(custom).png)
 
 ### Transformation 3: Create Flight Status and Delay Category Columns
-**Problem:** No single column classified each flight's outcome — Cancelled, Diverted, Delayed, On Time required inference from three separate fields.
+**Problem:** No single column classified each flight's outcome - Cancelled, Diverted, Delayed, On Time required inference from three separate fields.
 **Transformation:** Custom column with nested if: Cancelled → Diverted → Delayed (dep_delay > 15) → On Time. Also created Delay Category: Early/On Time, Minor (0–15 min), Moderate (15–60 min), Severe (>60 min).
 **Reason:** Single categorical status enables direct status breakdown charts without complex DAX on every visual.
 **Result:** Every flight has Flight Status and Delay Category labels powering Page 1 and Page 2 visuals.
@@ -143,7 +146,7 @@ Nine transformations were performed. All steps are visible in the Applied Steps 
 ### Transformation 6: Split Time Columns
 **Problem:** HHMM format time values needed splitting into hour components for departure-hour analysis.
 **Transformation:** Split Column and custom formulas to extract Sched_Dep_Hour (0–23) as standalone integer.
-**Reason:** Departure hour is critical — delays compound through the day as aircraft accumulate lateness on prior legs.
+**Reason:** Departure hour is critical - delays compound through the day as aircraft accumulate lateness on prior legs.
 **Result:** Sched_Dep_Hour column enables time-of-day delay pattern analysis.
 
 ![Split Columns](Screenshots/07_Splitted_Columns.png)
@@ -165,7 +168,7 @@ Nine transformations were performed. All steps are visible in the Applied Steps 
 ![Route Column](Screenshots/09_route_column(merging%20columns).png)
 
 ### Transformation 9: Create Dimension Tables
-**Problem:** Flat file repeats carrier names and airport details across thousands of rows — unsuitable for star schema.
+**Problem:** Flat file repeats carrier names and airport details across thousands of rows - unsuitable for star schema.
 **Transformation:** Reference Queries from fact table → select relevant columns → Remove Duplicates → DimCarrier (15), DimOriginAirport (326), DimDestAirport (324).
 **Reason:** Star schema requires normalized dimensions for proper one-to-many relationships and efficient filtering.
 **Result:** Four queries: flight_data_2024 (fact) + DimCarrier + DimOriginAirport + DimDestAirport.
@@ -183,19 +186,19 @@ The model follows a **Star Schema** with `FactFlights` at the centre connected t
 
 ### Model Explanation
 
-**FactFlights (flight_data_2024)** is the central fact table — one row per flight operation with all quantitative measures (dep_delay, arr_delay, distance, carrier_delay, weather_delay, nas_delay, security_delay, late_aircraft_delay, cancelled, diverted, air_time) and foreign keys to dimensions.
+**FactFlights (flight_data_2024)** is the central fact table - one row per flight operation with all quantitative measures (dep_delay, arr_delay, distance, carrier_delay, weather_delay, nas_delay, security_delay, late_aircraft_delay, cancelled, diverted, air_time) and foreign keys to dimensions.
 
-**DateTable** created in Power Query using List.Dates covering January 1 – March 25, 2024. Contains: Date (PK), Year, Month Number, Month Name, Quarter, Week Number, Day of Week Name. Marked as Date Table to enable TOTALYTD, TOTALMTD, PREVIOUSMONTH. Connected via `DateTable[Date] → FactFlights[fl_date]` (one-to-many, single direction).
+**DateTable** created in Power Query using List.Dates covering January 1 - March 25, 2024. Contains: Date (PK), Year, Month Number, Month Name, Quarter, Week Number, Day of Week Name. Marked as Date Table to enable TOTALYTD, TOTALMTD, PREVIOUSMONTH. Connected via `DateTable[Date] → FactFlights[fl_date]` (one-to-many, single direction).
 
-**DimCarrier** — 15 carriers with carrier_code (PK) and carrier_name. Created because IATA codes are not business-readable. Connected via `DimCarrier[carrier_code] → FactFlights[op_unique_carrier]` (one-to-many, single direction).
+**DimCarrier** - 15 carriers with carrier_code (PK) and carrier_name. Created because IATA codes are not business-readable. Connected via `DimCarrier[carrier_code] → FactFlights[op_unique_carrier]` (one-to-many, single direction).
 
-**DimOriginAirport** — 326 origin airports with IATA code (PK), city name, state. Enables geographic filtering of departure operations. Connected via `DimOriginAirport[origin] → FactFlights[origin]` (one-to-many, single direction).
+**DimOriginAirport** - 326 origin airports with IATA code (PK), city name, state. Enables geographic filtering of departure operations. Connected via `DimOriginAirport[origin] → FactFlights[origin]` (one-to-many, single direction).
 
-**DimDestAirport** — 324 destination airports. Created separately from DimOriginAirport because origin and destination serve different analytical roles — independent filtering without ambiguous filter paths. Connected via `DimDestAirport[dest] → FactFlights[dest]` (one-to-many, single direction).
+**DimDestAirport** — 324 destination airports. Created separately from DimOriginAirport because origin and destination serve different analytical roles - independent filtering without ambiguous filter paths. Connected via `DimDestAirport[dest] → FactFlights[dest]` (one-to-many, single direction).
 
 ### Cardinality and Filter Direction
 
-All relationships: **one-to-many, single cross-filter direction**. One-to-many is correct for star schema — each dimension entity relates to many flights. Single direction prevents circular filter paths and performance issues that bidirectional filtering causes in multi-dimension models.
+All relationships: **one-to-many, single cross-filter direction**. One-to-many is correct for star schema - each dimension entity relates to many flights. Single direction prevents circular filter paths and performance issues that bidirectional filtering causes in multi-dimension models.
 
 ### Modelling Challenge
 
@@ -209,16 +212,16 @@ The same airport IATA code appears as both origin and destination. Resolved by c
 
 ![All Measures](Screenshots/28_DAX_Measures.png)
 
-### Level 1 — Core KPI Measures
+### Level 1 - Core KPI Measures
 
-**Measure 1 — Total Flights**
+**Measure 1 - Total Flights**
 ```dax
 Total Flights = COUNTROWS(flight_data_2024)
 ```
 ![](Screenshots/13_Measure1_Total_Flights.png)
 Counts all records in current filter context. Foundation KPI and denominator for all rate calculations.
 
-**Measure 2 — Delayed Flights**
+**Measure 2 - Delayed Flights**
 ```dax
 Delayed Flights =
 CALCULATE(
@@ -230,7 +233,7 @@ CALCULATE(
 ![](Screenshots/14_Measure2_delayed_Flights.png)
 Counts flights delayed >15 minutes (FAA standard) excluding cancellations which have null dep_delay.
 
-**Measure 3 — On Time Flights**
+**Measure 3 - On Time Flights**
 ```dax
 On Time Flights =
 CALCULATE(
@@ -242,14 +245,15 @@ CALCULATE(
 ```
 ![](Screenshots/15_Measure3_OnTimeFlights.png)
 
-**Measure 4 — Delay Rate**
+**Measure 4 - Delay Rate**
 ```dax
 Delay Rate = DIVIDE([Delayed Flights], [Total Flights], 0)
 ```
 ![](Screenshots/16_Measure4_Delay_Rate.png)
+
 Normalized delay benchmark. DIVIDE handles zero denominator safely. Overall: 19.08%.
 
-**Measure 5 — Cancelled Flights**
+**Measure 5 - Cancelled Flights**
 ```dax
 Cancelled Flights =
 CALCULATE(COUNTROWS(flight_data_2024), flight_data_2024[cancelled] = 1)
@@ -257,15 +261,15 @@ CALCULATE(COUNTROWS(flight_data_2024), flight_data_2024[cancelled] = 1)
 ![](Screenshots/17_Measure5_CancelledFlights.png)
 Total: 538 cancellations (1.79%).
 
-**Measure 6 — Cancellation Rate**
+**Measure 6 - Cancellation Rate**
 ```dax
 Cancellation Rate = DIVIDE([Cancelled Flights], [Total Flights], 0)
 ```
 ![](Screenshots/18_Measure6_CancellationRate.png)
 
-### Level 2 — Calculated Business Measures
+### Level 2 - Calculated Business Measures
 
-**Measure 7 — Diverted Flights**
+**Measure 7 - Diverted Flights**
 ```dax
 Diverted Flights =
 CALCULATE(COUNTROWS(flight_data_2024), flight_data_2024[diverted] = 1)
@@ -273,34 +277,34 @@ CALCULATE(COUNTROWS(flight_data_2024), flight_data_2024[diverted] = 1)
 ![](Screenshots/19_Measure7_DivertedFlights.png)
 Total: 74 diversions (0.25%).
 
-**Measure 8 — Diversion Rate**
+**Measure 8 - Diversion Rate**
 ```dax
 Diversion Rate = DIVIDE([Diverted Flights], [Total Flights], 0)
 ```
 ![](Screenshots/20_Measure8_DiversionRate.png)
 
-**Measure 9 — Average Departure Delay**
+**Measure 9 - Average Departure Delay**
 ```dax
 Avg Departure Delay = AVERAGE(flight_data_2024[dep_delay])
 ```
 ![](Screenshots/21_Measure9_AvgDepartureDelay.png)
 Dataset average: 11.24 minutes. AVERAGE excludes nulls (cancelled flights) automatically.
 
-**Measure 10 — Average Arrival Delay**
+**Measure 10 - Average Arrival Delay**
 ```dax
 Avg Arrival Delay = AVERAGE(flight_data_2024[arr_delay])
 ```
 ![](Screenshots/22_Measure10_AVGArrivalDelay.png)
 Dataset average: 5.3 minutes — lower than departure delay, confirming crews recover time in flight.
 
-**Measure 11 — Average Flight Distance**
+**Measure 11 - Average Flight Distance**
 ```dax
 Avg Flight Distance = AVERAGE(flight_data_2024[distance])
 ```
 ![](Screenshots/23_Measure11_AVGFlightDistance.png)
 Dataset average: 834.5 miles.
 
-**Measure 12 — Total Delay Minutes**
+**Measure 12 - Total Delay Minutes**
 ```dax
 Total Delay Minutes =
 SUMX(
@@ -315,9 +319,9 @@ SUMX(
 ![](Screenshots/24_Measure12_TotalDelayMinutes.png)
 SUMX iterates row by row — handles nulls correctly across five columns. Dataset total: ~406,000–436,000 minutes.
 
-### Level 3 — Advanced DAX
+### Level 3 - Advanced DAX
 
-**Advanced Measure 1 — Carrier Delay Rank**
+**Advanced Measure 1 - Carrier Delay Rank**
 ```dax
 Carrier Delay Rank =
 RANKX(
@@ -331,7 +335,7 @@ RANKX(
 ![](Screenshots/25_AdvancedMeasure(CarrierDelayRank).png)
 Ranks all 15 carriers by delay rate simultaneously. ALL() removes carrier filter context. Rank 1 = worst.
 
-**Advanced Measure 2 — Delay Performance**
+**Advanced Measure 2 - Delay Performance**
 ```dax
 Delay Performance =
 VAR CarrierDelayRate = [Delay Rate]
@@ -346,7 +350,7 @@ IF(
 ![](Screenshots/26_AdvancedMeasure(DelayPerformance).png)
 VAR stores intermediate values. CALCULATE with ALL() computes overall rate ignoring all filters. IF returns descriptive label.
 
-**Advanced Measure 3 — Delay Rate vs Overall**
+**Advanced Measure 3 - Delay Rate vs Overall**
 ```dax
 Delay Rate vs Overall =
 VAR CarrierRate = [Delay Rate]
@@ -354,7 +358,8 @@ VAR OverallRate = CALCULATE([Delay Rate], ALL(flight_data_2024))
 RETURN CarrierRate - OverallRate
 ```
 ![](Screenshots/27_Advanced_Measure(DelayRate_vs_Overall).png)
-Percentage point gap — positive = worse than average, negative = better.
+
+Percentage point gap - positive = worse than average, negative = better.
 
 ### Six Most Important Measures Explained
 
@@ -375,16 +380,16 @@ Three report pages following the narrative: **What happened? → Why did it happ
 
 ---
 
-### Page 1 — 2024 Flight Operations Executive
+### Page 1 - 2024 Flight Operations Executive
 
 ![Executive Overview](Screenshots/29_Dashboard_Page1.png)
 
-**Purpose:** High-level executive summary — management understands headline performance within seconds.
+**Purpose:** High-level executive summary - management understands headline performance within seconds.
 
 **Visuals:**
 - 4 KPI Cards: Total Flights, Operational Delay Rate, Severe Delays, Average Delay
-- Bar Chart: Operational Delay Rate % by Carrier Name — Envoy Air and JetBlue worst; SkyWest best (~17%)
-- Donut Chart: Total Flights by Delay Category — 61.76% on time/early; 5.88% severe delay
+- Bar Chart: Operational Delay Rate % by Carrier Name - Envoy Air and JetBlue worst; SkyWest best (~17%)
+- Donut Chart: Total Flights by Delay Category - 61.76% on time/early; 5.88% severe delay
 - Line Chart: Daily Delay Rate trend across January, February, March 2024
 - Slicers: origin_state, dest_city, Code (carrier)
 
@@ -392,36 +397,36 @@ Three report pages following the narrative: **What happened? → Why did it happ
 
 ---
 
-### Page 2 — 2024 Flight Delay Diagnostics
+### Page 2 - 2024 Flight Delay Diagnostics
 
 ![Delay Diagnostics](Screenshots/30_Dashboard_Page2.png)
 
-**Purpose:** Root cause analysis — moving from "what happened" to "why it happened."
+**Purpose:** Root cause analysis - moving from "what happened" to "why it happened."
 
 **Visuals:**
 - 4 KPI Cards: Delayed Flights (11K), Total Delay Minutes (436K), Avg Departure Delay (11.24 min), Delay Rate % (0.36)
-- Horizontal Bar Chart: Delay Minutes by Cause — Late Aircraft leads at ~160K, then Carrier (~130K), NAS (~83K), Weather (~30K)
-- Pie Chart: Total Flights by Delay Category — 63.93% ahead of schedule/on time
-- Multi-Line Chart: All 5 delay causes by month — Late Aircraft consistently dominant; all types dip in February
-- Bar Chart: Average Delay by Carrier Code — G4 (Allegiant) ~58 min; AA ~54 min; F9 ~53 min
+- Horizontal Bar Chart: Delay Minutes by Cause - Late Aircraft leads at ~160K, then Carrier (~130K), NAS (~83K), Weather (~30K)
+- Pie Chart: Total Flights by Delay Category - 63.93% ahead of schedule/on time
+- Multi-Line Chart: All 5 delay causes by month - Late Aircraft consistently dominant; all types dip in February
+- Bar Chart: Average Delay by Carrier Code - G4 (Allegiant) ~58 min; AA ~54 min; F9 ~53 min
 - Slicers: fl_date, DelayCategory, Code
 
 **Story:** Late Aircraft delay (cascading from earlier legs) is the dominant systemic root cause at 37% of all delay minutes — a structural scheduling problem, not a random event.
 
 ---
 
-### Page 3 — Airport and Route Analysis
+### Page 3 - Airport and Route Analysis
 
 ![Airport and Route Analysis](Screenshots/31_Dashboard_Page3.png)
 
-**Purpose:** Geographic and multi-metric carrier comparison — where delays concentrate and how carriers compare simultaneously.
+**Purpose:** Geographic and multi-metric carrier comparison - where delays concentrate and how carriers compare simultaneously.
 
 **Visuals:**
 - 4 KPI Cards: Total Late Aircraft Delay (160K), Total Weather Delay (30K), Completed Flights (29K), On-Time/Early Flights (19K)
-- Bar/Decomposition Chart: Total Delay Minutes by Code — AA (99,141 min) and WN (74,972 min) = 40% of all delay
-- Line Chart: Total Security Delay by month and carrier — AA shows rising trend
-- Bubble Map: US geographic distribution — flight volume and delay by origin state
-- Carrier Performance Table: Code, Total Flights, Delay Rate %, Avg Delay, Cancelled Flights, Diversions — sortable
+- Bar/Decomposition Chart: Total Delay Minutes by Code - AA (99,141 min) and WN (74,972 min) = 40% of all delay
+- Line Chart: Total Security Delay by month and carrier - AA shows rising trend
+- Bubble Map: US geographic distribution - flight volume and delay by origin state
+- Carrier Performance Table: Code, Total Flights, Delay Rate %, Avg Delay, Cancelled Flights, Diversions - sortable
 - Slicers: origin_city, dest_state
 
 **Story:** The carrier table reveals the key insight — DL (Delta) achieves 29% delay rate with 4,108 flights while AA reaches 43% with only 4,255 flights. A 14-point performance gap at comparable volume proves operational excellence is achievable at scale.
@@ -430,29 +435,29 @@ Three report pages following the narrative: **What happened? → Why did it happ
 
 ## Business Insights
 
-### Insight 1 — Late Aircraft Delay is the Dominant Systemic Root Cause
+### Insight 1 - Late Aircraft Delay is the Dominant Systemic Root Cause
 
-The Page 2 horizontal bar chart confirms Late Aircraft delay accounts for ~160,000 of ~436,000 total delay minutes (approximately 37%) — the single largest cause, exceeding Carrier Delay (~130K), NAS Delay (~83K), and Weather Delay (~30K). The monthly trend confirms this cause is consistently dominant across all three months.
+The Page 2 horizontal bar chart confirms Late Aircraft delay accounts for ~160,000 of ~436,000 total delay minutes (approximately 37%) - the single largest cause, exceeding Carrier Delay (~130K), NAS Delay (~83K), and Weather Delay (~30K). The monthly trend confirms this cause is consistently dominant across all three months.
 
-Late aircraft delay is a cascading effect — delays on early-day flights propagate through all subsequent legs on the same aircraft. This is carrier-controlled and therefore directly actionable.
+Late aircraft delay is a cascading effect - delays on early-day flights propagate through all subsequent legs on the same aircraft. This is carrier-controlled and therefore directly actionable.
 
 **Recommendation:** Build greater buffer time into aircraft rotation schedules, particularly at high-congestion hubs. Even a 10–15 minute buffer on the first morning departure of each rotation could substantially reduce cascading delay propagation.
 
-### Insight 2 — A 14-Point Performance Gap Between AA and DL at Comparable Flight Volumes
+### Insight 2 - A 14-Point Performance Gap Between AA and DL at Comparable Flight Volumes
 
-The Page 3 carrier performance table shows American Airlines (AA) operating 4,255 flights at a 43% delay rate and 54.32 minute average delay, while Delta Air Lines (DL) operates 4,108 flights — a similar scale — at 29% delay rate and 38.83 minute average delay. Carrier Delay Rank and Delay Rate vs Overall confirm this gap.
+The Page 3 carrier performance table shows American Airlines (AA) operating 4,255 flights at a 43% delay rate and 54.32 minute average delay, while Delta Air Lines (DL) operates 4,108 flights —- a similar scale - at 29% delay rate and 38.83 minute average delay. Carrier Delay Rank and Delay Rate vs Overall confirm this gap.
 
 This 14-point performance difference at comparable volumes proves scale alone does not determine reliability. DL's operational processes achieve materially better performance.
 
 **Recommendation:** AA management should conduct a root-cause comparison against DL — examining aircraft maintenance scheduling, crew management, hub turn-around procedures, and weather response protocols. The Carrier Delay Rank measure enables quarterly monitoring of this gap as a KPI.
 
-### Insight 3 — 35% of Cancellations are Carrier-Controlled and Preventable
+### Insight 3 - 35% of Cancellations are Carrier-Controlled and Preventable
 
 Of 538 total cancellations: 326 (60.6%) were Weather-caused (unavoidable), 187 (34.8%) were Carrier-caused (code A — equipment, crew, or operational issues), and 25 (4.6%) were NAS-caused.
 
 While weather-caused cancellations cannot be controlled, the 187 carrier-caused cancellations represent operational failures addressable through investment in maintenance quality, crew reserve planning, and operational resilience.
 
-**Recommendation:** Target the 35% carrier-caused cancellation segment. Even a 50% reduction would prevent ~93 cancellations per quarter — meaningful improvement in passenger reliability and a reduction in compensation costs. Monitor Cancellation Rate and Cancellation Reason monthly using the DateTable time intelligence.
+**Recommendation:** Target the 35% carrier-caused cancellation segment. Even a 50% reduction would prevent ~93 cancellations per quarter - meaningful improvement in passenger reliability and a reduction in compensation costs. Monitor Cancellation Rate and Cancellation Reason monthly using the DateTable time intelligence.
 
 ---
 
